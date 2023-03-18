@@ -1,0 +1,372 @@
+EC2 Instance creation
+
+1) First we have to generate the RSA key which is used to prove identity when connecting/generating EC2 instance
+2) Post that will create the EC2 instance
+3) If there is any requirement of ASG, then I have to create the ASG. Ideally ASG has following attributes
+ASG have following attributes
+a) A launch configuration
+	1) AMI + Instance type
+	2) EC2 User Data
+	3) EBS Volumes
+	4) Security Groups
+	5) SSH Key Pair
+
+b)Min Size/Max Size/Initial Capacity of the instance
+c) Network + Subnets Information
+d) Load Balancer Information
+e) Scaling Policies
+
+4) After Creating the ASG i have to attach the Load Balancer
+	ELB --> 
+		1)Classic Load Balancer (Not used much)
+		2) Application LOad Balancer
+		3) Network Load Balancer
+
+5) After that Security Group needs to be created for the VPC where I have to define the ports to be made public that it can be accessed over the load balancer
+6) If we want to give access to Internet then I have add to NAT gateway.
+============================================================================================================================
+launch configuration vs launch templates
+
+launch configuration are used with Auto Scaling Groups
+launch templates are used when we launch an instance using aws EC2 console. launch template enables you to store the parameters (AMI instance type, security groups, key-pairs) so that we do not need to define these parameters every time you launch a new instance. 
+
+=================================================================================================================================================================
+IAM: Indentity Access Management. IAM allows you to manage users and their level of access to AWS console.
+IAM Security Tools
+1) IAM Credentials Report (account-level--> a report that lists all your account's users and the status of their various credentials
+2) IAM Access Advisor (user-level)--> Access advisor shows the service permissions granted to a user and when those services were last accessed.
+                                      You can use this information to revise your policies
+
+
+=================================================================================================================================================================
+
+EC2 Instance Types - Overview
+• You can use different types of EC2 instances that are optimised for different use cases (https://aws.amazon.com/ec2/instance-types/)
+• AWS has the following naming convention:
+  m5.2xlarge
+  m: instance class
+  5: generation (AWS improves them over time)
+  2xlarge: size within the instance class
+
+EC2 Instance Types – General Purpose
+• Great for a diversity of workloads such as web servers or code repositories
+• Balance between:
+	Compute
+	Memory
+	Networking
+
+Introduction to Security Groups
+• Security Groups are the fundamental of network security in AWS
+• They control how traffic is allowed into or out of our EC2 Instances.
+• Security groups only contain allow rules
+• Security groups rules can reference by IP or by security group
+• Security groups are acting as a “firewall” on EC2 instances 
+• They regulate:	
+	• Access to Ports 
+	• Authorised IP ranges – IPv4 and IPv6 
+	• Control of inbound network (from other to the instance) 
+	• Control of outbound network (from the instance to other)
+
+• 22 = SSH (Secure Shell) - log into a Linux instance
+• 21 = FTP (File Transfer Protocol) – upload files into a file share
+• 22 = SFTP (Secure File Transfer Protocol) – upload files using SSH
+• 80 = HTTP – access unsecured websites
+• 443 = HTTPS – access secured websites
+• 3389 = RDP (Remote Desktop Protocol) – log into a Windows instance
+
+• Purchasing Options: On-Demand, Spot, Reserved (Standard +Convertible + Scheduled), Dedicated Host, Dedicated Instance
+
+==================================================================================================================================================
+What is VPC
+VPC stands for Virtual Private Cloud.
+Amazon Virtual Private Cloud (Amazon VPC) provides a logically isolated area of the AWS cloud where you can launch AWS resources in a virtual network that you define.
+You have complete control over your virtual networking environment, including a selection of your IP address range, the creation of subnets, and configuration of route tables and network gateways.
+You can easily customize the network configuration for your Amazon Virtual Private Cloud. For example, you can create a public-facing subnet for web servers that can access to the internet and can also place your backend system such as databases or application servers to a private-facing subnet.
+You can provide multiple layers of security, including security groups and network access control lists, to help control access to Amazon EC2 instances in each subnet.
+
+Most common IP address 
+
+10.0.0.0 - 10.255.255.255 (10/8 prefix)
+172.16.0.0 - 172.31.255.255 (172.16/12 prefix)
+192.168.0.0 - 192.168.255.255(192.168/16 prefix)
+
+When we create a VPC automatically, 3 things gets created automatically
+1) Security Group
+2) Main Route Table
+3) Main Network ACL
+
+
+==============================================================================================================================================
+Different types of Storage in Ec2
+-----------------------------------
+What’s an EBS Volume?
+• An EBS (Elastic Block Store) Volume is a network drive you can attachto your instances while they run
+• It allows your instances to persist data, even after their termination
+• They can only be mounted to one instance at a time (at the CCP level)
+• They are bound to a specific availability zone
+• It’s a network drive (i.e. not a physical drive)
+• It uses the network to communicate the instance, which means there might be a bit of latency
+• It can be detached from an EC2 instance and attached to another one quickly
+• It’s locked to an Availability Zone (AZ)
+• An EBS Volume in us-east-1a cannot be attached to us-east-1b
+• To move a volume across, you first need to snapshot it
+
+
+====================================================================================================================================
+
+EFS – Elastic File System
+• Managed NFS (network file system) that can be mounted on 100s of EC2
+• EFS works with Linux EC2 instances in multi-AZ
+• Highly available, scalable, expensive (3x gp2), pay per use, no capacity planning
+
+================================================================================================================================================
+EC2 Instance Store
+• EBS volumes are network drives with good but “limited” performance
+• If you need a high-performance hardware disk, use EC2 Instance Store
+• Better I/O performance
+• EC2 Instance Store lose their storage if they’re stopped (ephemeral)
+• Good for buffer / cache / scratch data / temporary content
+• Risk of data loss if hardware fails
+• Backups and Replication are your responsibility 
+==============================================================================================================================================
+EFS Infrequent Access (EFS-IA)
+• Storage class that is cost-optimized for files not
+accessed every day
+• Up to 92% lower cost compared to EFS Standard
+• EFS will automatically move your files to EFS-IA based on the last time they were accessed
+• Enable EFS-IA with a Lifecycle Policy
+• Example: move files that are not accessed for 60 days to EFS-IA
+• Transparent to the applications accessing EFS
+===========================================================================================================================================
+
+Amazon FSx – Overview
+• Launch 3rd party high-performance file systems on AWS
+• Fully managed service
+
+==================================================================================================================================================
+
+What is load balancing?
+• Load balancers are servers that forward internet traffic to multipleservers (EC2 Instances) downstream.
+
+Why use an Elastic Load Balancer?
+• An ELB (Elastic Load Balancer) is a managed load balancer
+• AWS guarantees that it will be working
+• AWS takes care of upgrades, maintenance, high availability
+• AWS provides only a few configuration knobs
+• It costs less to setup your own load balancer but it will be a lot moreeffort on your end (maintenance, integrations)
+• 3 kinds of load balancers offered by AWS:
+	• Application Load Balancer (HTTP / HTTPS only) – Layer 7 Application layer. Serves as single point of contact for clients. Distributes incoming application traffic across multiple 	  targets such as EC2 instance
+	• Network Load Balancer (ultra-high performance, allows for TCP) – Layer 4 Transport layer. It helps in distributing the traffic across several servers.
+	• Classic Load Balancer (slowly retiring) – Layer 4 & 7
+
+The network load balancer just forward requests whereas the application load balancer examines the contents of the HTTP request header to determine where to route the request. So, the application load balancer is performing content-based routing.
+==================================================================================================================================================
+
+What’s an Auto Scaling Group?
+• In real-life, the load on your websites and application can change
+• In the cloud, you can create and get rid of servers very quickly
+• The goal of an Auto Scaling Group (ASG) is to:
+• Scale out (add EC2 instances) to match an increased load
+• Scale in (remove EC2 instances) to match a decreased load
+• Ensure we have a minimum and a maximum number of machines running
+• Automatically register new instances to a load balancer
+• Replace unhealthy instances
+• Cost Savings: only run at an optimal capacity (principle of the cloud)
+================================================================================
+
+Amazon S3 Overview - Buckets - Simple Storage services
+• S3 is object based storage
+• Amazon S3 allows people to store objects (files) in “buckets” (directories)
+• Cannot be used to run operating system or databases
+• Buckets must have a globally unique name (across all regions all accounts)
+• Buckets are defined at the region level
+• S3 looks like a global service but buckets are created in a region
+• Naming convention
+	• No uppercase
+	• No underscore
+	• 3-63 characters long
+	• Not an IP
+	• Must start with lowercase letter or number
+
+• Objects (files) have a Key 
+• The key is the FULL path: • s3://my-bucket/my_file.txt 
+• s3://my-bucket/my_folder1/another_folder/my_file.txt 
+• The key is composed of prefix + object name 
+• s3://my-bucket/my_folder1/another_folder/my_file.txt 
+• There’s no concept of “directories” within buckets (although the UI will trick you to think otherwise)
+• Just keys with very long names that contain slashes (“/”)
+
+S3 Security
+• User based
+• IAM policies - which API calls should be allowed for a specific user from IAM console
+• Resource Based
+	• Bucket Policies - bucket wide rules from the S3 console - allows cross account
+	• Object Access Control List (ACL) – finer grain
+	• Bucket Access Control List (ACL) – less common
+• Note: an IAM principal can access an S3 object if
+	• the user IAM permissions allow it OR the resource policy ALLOWS it
+	• AND there’s no explicit DENY
+• Encryption: encrypt objects in Amazon S3 using encryption keys
+Types of encryption:
+1) Encryption in Transit: 
+	• SSL/TLS and 
+	• HTTPS
+2) Encryption at Rest: Server side encryption
+	• SSE-S3: S3-managed keys using AES 256-bit encryption
+	• SSE-KMS: AWS key management Service-managed keys
+	• SSE-C: Customer-provided keys
+3) Encryption at Rest: Client side encryption
+	• You encrypt the files yourself before you upload the files to S3.
+
+S3 Bucket Policies 
+	• JSON based policies 
+	• Resources: buckets and objects 
+	• Actions: Set of API to Allow or Deny 
+	• Effect: Allow / Deny • Principal: The account or user to apply the policy to
+• Use S3 bucket for policy to: 
+	• Grant public access to the bucket 
+	• Force objects to be encrypted at upload 
+	• Grant access to another account (Cross Account)
+
+S3 Storage Classes
+• Amazon S3 Standard - General Purpose
+• Amazon S3 Standard-Infrequent Access (IA)
+• Amazon S3 Intelligent Tiering
+• Amazon S3 One Zone-Infrequent Access
+• Amazon S3 Glacier Instant Retrieval
+• Amazon S3 Glacier Flexible Retrieval
+• Amazon S3 Glacier Deep Archive
+
+
+S3 Bucket creation
+
+1) “Create Bucket”. Give a name to the bucket. This name should be globally unique and bucket with the same name must not exist on AWS around the globe. 
+Each and every bucket on AWS has a uniqe name and does not match with any other bucket.
+2) Choose the desired region, may be go for the closest one. Click on “Next” to proceed further. 
+3) We can configure the bucket as per our requirement. If we want to keep multiple versions of the objects, we can enable versioning.
+4) We can enable server access logging if we want to keep access logs to the bucket. We can tags the bucket so that we can use this tags for billing purpose. 
+If we want to save objects in an encrypted form we can enable it.
+
+Below are the points which we have to take care while creating a bucket
+
+• Buckets are a universal namespace, i.e., the bucket names must be unique.
+• If uploading of an object to S3 bucket is successful, we receive a HTTP 200 code.
+• S3, S3-IA, S3 Reduced Redundancy Storage are the storage classes.
+• Encryption is of two types, i.e., Client Side Encryption and Server Side Encryption
+• Access to the buckets can be controlled by using either ACL (Access Control List) or bucket policies.
+• By default buckets are private and all the objects stored in a bucket are also private.
+
+================================================================================================================================================================
+What is AWS Lambda?
+• AWS Lambda is a compute service that lets you run code without provisioning or managing servers. 
+• It executes your code only when needed and scales automatically, from a few requests per day to thousands per second.
+
+Lambda function creation
+
+Step 1: “Create Function”
+Step 2: Below details needs to provided for creating Function
+	Function Type: Author from scratch
+	Name : lambdaBlog
+	Runtime: Node.js 10.x/Python/Java
+	Role: Choose an existing role / Create any custom rule
+	Existing Role: lambda_basic_execution
+Step 3: upload/create code in the lambda function.
+Step 4: It runs on Nodejs/python/Java which we selected earlier in runtime. 
+Step 5: We can add more options like execution timeout, environment variables, tags to group out our other functions, memory etc.
+
+
+========================================================================================================================
+
+AWS RDS Overview
+• RDS stands for Relational Database Service
+• It’s a managed DB service for DB use SQL as a query language.
+• It allows you to create databases in the cloud that are managed by AWS
+• Postgres
+• MySQL
+• MariaDB
+• Oracle
+• Microsoft SQL Server
+• Aurora (AWS Proprietary database)
+
+=========================================================================================================================================
+
+DevOps: https://www.simform.com/blog/devops-lifecycle/
+
+DevOps is a practice that allows a single team to manage the entire application development life cycle, that is, development, testing, deployment, and operations.
+
+What is DevOps Life cycle?
+As mentioned earlier, the various phases  
+1) continuous development
+2) continuous integration
+3) continuous testing
+4) continuous deployment
+5) continuous monitoring 
+6) continuous feedback
+7) continuous operations
+
+============================================================================================================================================
+AWS EKS: https://rafay.co/the-kubernetes-current/getting-started-with-amazon-eks/
+
+• AWS provides a Kubernetes control plane while AWS customers control their worker Nodes.
+
+Amazon EKS Cluster Architecture
+----------------------------------
+A Kubernetes cluster is based on distributed components that offer either of the following services:
+• Configure and Manage Kubernetes services, also known as Kubernetes Control Plane Configure and Manage user applications, also known as Worker Nodes
+• An EKS cluster consists of the above components deployed in two separate VPCs.
+
+AWS manages the VPC, which hosts the Control Plane. The user operates the second VPC, which hosts the Worker Nodes.
+
+The Worker Nodes must connect to the Control Plane to register them for a cluster. The second VPC hosts all enterprise applications and must be reachable from its clients.
+
+Control plane
+When you create an EKS cluster, a control plane is automatically created and configured. 
+The control plane infrastructure is not shared across different AWS clusters. 
+Control plane components for a cluster can’t view or receive communication from other clusters or other AWS accounts, except as authorized with Kubernetes RBAC policies.
+
+Worker Nodes
+EKS provides the following ways to configure worker nodes for executing application containers:
+
+Self-Managed: The user has to provision EC2 instances which are associated with the cluster. This gives you flexibility in configuring worker nodes.
+Managed: Managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) for Amazon EKS Kubernetes clusters.
+Fargate: AWS Fargate is a serverless compute engine managed by AWS to run container workloads without actively managing servers to run them.
+
+10 Recommended Kubectl Commands
+-------------------------------
+
+1) Use this command to summon a list of all services in the current namespace:
+kubectl get services
+
+2) To retrieve a list of services in all namespaces, simply append the previous command like so:
+kubectl get pods --all-namespaces
+
+3) Retrieve details on your nodes. This grabs each node’s name, status (running, ready, inactive), roles (master, worker, controlplane, etcd), age, and Kubernetes version.
+kubectl get nodes
+
+4) Use this command to create a new namespace. Name it whatever you’d like (as long as that name isn’t already taken):
+kubectl create ns hello-there
+
+5) Leverage your files to configure Kubernetes
+kubectl apply -f config.yaml
+
+6) List all running pods in a namespace
+kubectl get pods --field-selector=status.phase=Running
+
+7) Understand your cluster services
+kubectl cluster-info
+
+8) Request service logs
+kubectl logs -f <service_name>
+
+9) Reveal your secrets
+kubectl get secrets
+
+10) Keeping track of events
+kubectl get events
+
+11) Leverage new DaemonSets
+kubectl create daemonset <daemonset_name>
+
+
+codecommit--> developer tool
+

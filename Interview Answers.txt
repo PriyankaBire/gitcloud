@@ -1,0 +1,100 @@
+Ports 20 and 21: File Transfer Protocol (FTP). FTP is for transferring files between a client and a server.
+Port 22: Secure Shell (SSH). SSH is one of many tunneling protocols that create secure network connections.
+Port 25: Historically, Simple Mail Transfer Protocol (SMTP). SMTP is used for email.
+Port 53: Domain Name System (DNS). DNS is an essential process for the modern Internet; it matches human-readable domain names to machine-readable IP addresses, enabling users to load websites and applications without memorizing a long list of IP addresses.
+Port 80: Hypertext Transfer Protocol (HTTP). HTTP is the protocol that makes the World Wide Web possible.
+Port 123: Network Time Protocol (NTP). NTP allows computer clocks to sync with each other, a process that is essential for encryption.
+Port 179: Border Gateway Protocol (BGP). BGP is essential for establishing efficient routes between the large networks that make up the Internet (these large networks are called autonomous systems). Autonomous systems use BGP to broadcast which IP addresses they control.
+Port 443: HTTP Secure (HTTPS). HTTPS is the secure and encrypted version of HTTP. All HTTPS web traffic goes to port 443. Network services that use HTTPS for encryption, such as DNS over HTTPS, also connect at this port.
+Port 500: Internet Security Association and Key Management Protocol (ISAKMP), which is part of the process of setting up secure IPsec connections.
+Port 587: Modern, secure SMTP that uses encryption.
+Port 3389: Remote Desktop Protocol (RDP). RDP enables users to remotely connect to their desktop computers from another device.
+
+10.0.0.0 --> Network Address
+10.0.0.1 --> Route Table
+10.0.0.2 --> DNS server
+10.0.0.3 --> Future use
+10.0.0.255 --> Network brodcast address. We do not support brodcast in VPC, therefore we reserve this address
+
+EC2 Instance:
+1) EC2 pricing options:
+	a) On-Demand
+	b) Reserved
+	c) Spot 
+	d) Dedicated
+
+2) Networking with EC2
+	a) ENI: Elastic Network Interface--> For basic or day to day networking
+	b) EN: Enhanced Networking --> For High performance Networking(10Ggbps- 100Gbps)
+	c) EFA: Elastic Fiber Adapter --> High performance compute & Machine Learning Applications
+ 
+S3 Bucket:
+1) Manages data as objects rather than in file systems or blocks
+2) Naming convention: https://s3-bucketname.s3region.amazonaws.com/key-name
+3) S3 Storage Classes
+•	Amazon S3 Standard - General Purpose
+•	Amazon S3 Standard-Infrequent Access (IA)
+•	Amazon S3 Intelligent Tiering
+•	Amazon S3 One Zone-Infrequent Access
+•	Amazon S3 Glacier Instant Retrieval
+•	Amazon S3 Glacier Flexible Retrieval
+•	Amazon S3 Glacier Deep Archive
+4) Charateristics: a) Tiered Storage(related to storage classes above) b) Lifecycle Management c) Versioning
+5) S3 Bucket Public access
+a) Object ACLs(Works on individual object level) vs Bucket Policy(Works on whole bucket level)
+6) How to make objects inside the bucket public
+	a) Permissions--> Block Public access--> Disable this
+	b) Permissions--> Object Ownership--> Edit--> Enable ACLs
+	c) Actions--> Make Public using ACLs
+7) We can use S3 to host public websites
+8) Steps to create static website --> Three files a) Index.html b) Error.html c) policy_permission JSON file
+	a) Create a bucket --> Disable "Block Public Access" --> Create the bucket
+	b) Go Inside the bucket--> Properties--> Stactic website Hosting --> Enable --> Provide Index.html 
+	   & Error.html file and you can see the url
+
+	c) Upload the index & error html file
+	d) Once done we can go to actions and make the objects public but concern will be raised when 
+	   there are thousands of file so we have to make the bucket public
+
+	e) To make bucket public--> Click on Bucket-->Permissions--> Edit bucket policy--> Provide the policy json file --> save
+	f) Bucket is publicly accessible
+
+9) Versioning advantages: 
+	a) All previous versions are accessible
+	b) Backup
+	c) Once enabled cannot be disabled only suspended
+	d) Helps in Lifecycle rules
+10) Lifecycle Management with S3
+	a)Steps to do Lifecycle Management--> S3 --> Bucket created--> Properties--> Enable Bucket versioning--> 
+		Save changes-->Management--> Create life cycle rule
+
+11) S3 Object lock & Glacier Vault Lock
+	a) S3 follows WORM model
+	b) Lock Modes--> 
+			1) Governance Mode: Users can't overwrite or delete an object version or alter its lock settings 
+			unless they have special permissions
+			2) Compliance Mode: A protected object version can't be overwritten or deleted by any user including root user
+12) Encrypting S3 Objects: Note: Versioning should be enabled
+	a) Encryption in Transit --> 1) SSL/TLS 2) HTTPS
+	b) Encryption at Rest: 
+		1) Server Side Encryption --> a) SSE-S3: S3 managed keys
+					      b) SSE-KMS: AWS Key Management Service-managed keys
+					      c) SSE-C: Customer Provided keys
+		2) Client Side Encryption --> You can encrypt the files before uploading to S3
+
+13) Backing the Data with S3 replication
+	a) Objects in existing buckets are not replicated automatically
+	b) Delete Markers are not replicated automatically you ahve to enable the Delete marker replication for the same
+	c) Versioning should be enabled for replication rule to take place
+
+
+
+
+
+
+
+
+
+
+
+
