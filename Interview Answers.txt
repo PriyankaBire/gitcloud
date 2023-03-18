@@ -1,4 +1,4 @@
-Portdetails:
+Portdetails to be remember
 Ports 20 and 21: File Transfer Protocol (FTP). FTP is for transferring files between a client and a server.
 Port 22: Secure Shell (SSH). SSH is one of many tunneling protocols that create secure network connections.
 Port 25: Historically, Simple Mail Transfer Protocol (SMTP). SMTP is used for email.
