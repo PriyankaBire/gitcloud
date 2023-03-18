@@ -11,11 +11,11 @@ Port 500: Internet Security Association and Key Management Protocol (ISAKMP), wh
 Port 587: Modern, secure SMTP that uses encryption.
 Port 3389: Remote Desktop Protocol (RDP). RDP enables users to remotely connect to their desktop computers from another device.
 
-10.0.0.0 --> Network Address
-10.0.0.1 --> Route Table
-10.0.0.2 --> DNS server
-10.0.0.3 --> Future use
-10.0.0.255 --> Network brodcast address. We do not support brodcast in VPC, therefore we reserve this address
+1)10.0.0.0 --> Network Address
+2)10.0.0.1 --> Route Table
+3)10.0.0.2 --> DNS server
+4)10.0.0.3 --> Future use
+5)10.0.0.255 --> Network brodcast address. We do not support brodcast in VPC, therefore we reserve this address
 
 EC2 Instance:
 1) EC2 pricing options:
